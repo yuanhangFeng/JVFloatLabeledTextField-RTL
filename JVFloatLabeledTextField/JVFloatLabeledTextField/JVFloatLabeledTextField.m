@@ -261,11 +261,19 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     return CGRectIntegral(rect);
 }
 
+- (void)drawPlaceholderInRect:(CGRect)rect {
+    CGSize size = [self getSizeOfText:self.placeholder withFont:self.font];
+    [self.placeholder drawInRect:CGRectMake(rect.size.width - (size.width + (self.clearButtonMode != UITextFieldViewModeNever ? 0 : 0)), (rect.size.height - size.height)/2, size.width, size.height) withAttributes:@{
+                                                                                                                                                          NSFontAttributeName: self.font,
+                                                                                                            NSForegroundColorAttributeName: [UIColor grayColor]
+                                                                                                                                                        }];
+}
+
 - (CGRect)insetRectForBounds:(CGRect)rect
 {
     CGFloat topInset = ceilf(_floatingLabel.bounds.size.height + _placeholderYPadding);
     topInset = MIN(topInset, [self maxTopInset]);
-    return CGRectMake(rect.origin.x, rect.origin.y + topInset / 2.0f, rect.size.width, rect.size.height);
+    return CGRectMake(self.clearButtonMode != UITextFieldViewModeNever ? 24 : 0, rect.origin.y + topInset / 2.0f, rect.size.width, rect.size.height);
 }
 
 - (CGRect)clearButtonRectForBounds:(CGRect)bounds
@@ -277,7 +285,7 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
         if ([self.text length] || self.keepBaseline) {
             CGFloat topInset = ceilf(_floatingLabel.font.lineHeight + _placeholderYPadding);
             topInset = MIN(topInset, [self maxTopInset]);
-            rect = CGRectMake(rect.origin.x, rect.origin.y + topInset / 2.0f, rect.size.width, rect.size.height);
+            rect = CGRectMake(0 , rect.origin.y + topInset / 2.0f, rect.size.width, rect.size.height);
         }
     }
     return CGRectIntegral(rect);
@@ -346,5 +354,13 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
         [self showFloatingLabel:firstResponder];
     }
 }
+
+- (CGSize)getSizeOfText:(NSString *)text withFont:(UIFont *)font {
+    NSDictionary *userAttributes = @{
+                                     NSFontAttributeName: font
+                                     };
+    return [text sizeWithAttributes:userAttributes];
+}
+
 
 @end
