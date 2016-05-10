@@ -60,5 +60,6 @@ typedef NS_ENUM(NSUInteger, JVTextDirection) {
  *  @return the inferred text directionality of this string.
  */
 - (JVTextDirection)getBaseDirection;
+- (JVTextDirection)getTextDirection;
 
 @end

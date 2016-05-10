@@ -59,6 +59,8 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     _floatingLabel = [UILabel new];
     _floatingLabel.alpha = 0.0f;
     [self addSubview:_floatingLabel];
+    
+    self.textAlignment = NSTextAlignmentNatural;
 	
     // some basic default fonts/colors
     _floatingLabelFont = [self defaultFloatingLabelFont];
@@ -247,6 +249,9 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
 {
     CGRect rect = [super textRectForBounds:bounds];
     if ([self.text length] || self.keepBaseline) {
+        if (bounds.size.width > rect.size.width + rect.origin.x) {
+            rect = bounds;
+        }
         rect = [self insetRectForBounds:rect];
     }
     return CGRectIntegral(rect);
@@ -256,14 +261,18 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
 {
     CGRect rect = [super editingRectForBounds:bounds];
     if ([self.text length] || self.keepBaseline) {
+        if (bounds.size.width > rect.size.width + rect.origin.x) {
+            rect = bounds;
+        }
         rect = [self insetRectForBounds:rect];
     }
     return CGRectIntegral(rect);
 }
 
 - (void)drawPlaceholderInRect:(CGRect)rect {
+    rect = [self editingRectForBounds:self.bounds];
     CGSize size = [self getSizeOfText:self.placeholder withFont:self.font];
-    [self.placeholder drawInRect:CGRectMake(rect.size.width - (size.width + (self.clearButtonMode != UITextFieldViewModeNever ? 0 : 0)), (rect.size.height - size.height)/2, size.width, size.height) withAttributes:@{
+    [self.placeholder drawInRect:CGRectMake(rect.size.width - size.width - (self.clearButtonMode != UITextFieldViewModeNever ? 0 : 0), (rect.size.height - size.height)/2, size.width, size.height) withAttributes:@{
                                                                                                                                                           NSFontAttributeName: self.font,
                                                                                                             NSForegroundColorAttributeName: [UIColor grayColor]
                                                                                                                                                         }];
@@ -273,7 +282,8 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
 {
     CGFloat topInset = ceilf(_floatingLabel.bounds.size.height + _placeholderYPadding);
     topInset = MIN(topInset, [self maxTopInset]);
-    return CGRectMake(self.clearButtonMode != UITextFieldViewModeNever ? 24 : 0, rect.origin.y + topInset / 2.0f, rect.size.width, rect.size.height);
+
+    return CGRectMake(self.clearButtonMode != UITextFieldViewModeNever ? 24 : 0, rect.origin.y + topInset / 2.0f, rect.size.width - (self.clearButtonMode != UITextFieldViewModeNever ? 24 : 0), rect.size.height);
 }
 
 - (CGRect)clearButtonRectForBounds:(CGRect)bounds
@@ -288,6 +298,7 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
             rect = CGRectMake(0 , rect.origin.y + topInset / 2.0f, rect.size.width, rect.size.height);
         }
     }
+    
     return CGRectIntegral(rect);
 }
 
@@ -347,6 +358,7 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     BOOL firstResponder = self.isFirstResponder;
     _floatingLabel.textColor = (firstResponder && self.text && self.text.length > 0 ?
                                 self.labelActiveColor : self.floatingLabelTextColor);
+
     if ((!self.text || 0 == [self.text length]) && !self.alwaysShowFloatingLabel) {
         [self hideFloatingLabel:firstResponder];
     }

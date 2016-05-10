@@ -46,21 +46,25 @@ static BOOL isCodePointStrongLTR(UTF32Char c)
 - (JVTextDirection)getBaseDirection
 {
     return JVTextDirectionRightToLeft;
-//    // Decode string into UTF32.
-//    NSData *utf32data = [self dataUsingEncoding:NSUTF32StringEncoding];
-//    // NSUTF32StringEncoding has the platform's byte-order, which should
-//    // be the same as UTF32Char's.
-//    UTF32Char *utf32chars = (UTF32Char *)[utf32data bytes];
-//    
-//    for (NSUInteger i = 0; i < self.length; i++) {
-//        // UTF32 is a fixed-length encoding, so utf32chars[i] will
-//        // always give us the i'th character.
-//        if (isCodePointStrongRTL(utf32chars[i]))
-//            return JVTextDirectionRightToLeft;
-//        if (isCodePointStrongLTR(utf32chars[i]))
-//            return JVTextDirectionLeftToRight;
-//    }
-//    return JVTextDirectionNeutral;
+}
+
+- (JVTextDirection)getTextDirection
+{
+        // Decode string into UTF32.
+        NSData *utf32data = [self dataUsingEncoding:NSUTF32StringEncoding];
+        // NSUTF32StringEncoding has the platform's byte-order, which should
+        // be the same as UTF32Char's.
+        UTF32Char *utf32chars = (UTF32Char *)[utf32data bytes];
+    
+        for (NSUInteger i = 0; i < self.length; i++) {
+            // UTF32 is a fixed-length encoding, so utf32chars[i] will
+            // always give us the i'th character.
+            if (isCodePointStrongRTL(utf32chars[i]))
+                return JVTextDirectionRightToLeft;
+            if (isCodePointStrongLTR(utf32chars[i]))
+                return JVTextDirectionLeftToRight;
+        }
+        return JVTextDirectionNeutral;
 }
 
 @end
