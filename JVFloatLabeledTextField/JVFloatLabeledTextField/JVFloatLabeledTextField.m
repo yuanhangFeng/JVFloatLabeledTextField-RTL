@@ -344,6 +344,15 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
 
 - (void)layoutSubviews
 {
+    if (self.text && self.text.length > 1) {
+        if ([self.text getTextDirection] == JVTextDirectionRightToLeft) {
+            super.textAlignment = NSTextAlignmentRight;
+        }else{
+            super.textAlignment = NSTextAlignmentLeft;
+        }
+    }else{
+        super.textAlignment = NSTextAlignmentNatural;
+    }
     [super layoutSubviews];
     
     [self setLabelOriginForTextAlignment];
